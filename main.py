@@ -8,6 +8,7 @@ Para rodar:
 
 import re
 import sys
+from datetime import datetime
 
 import pandas as pd
 
@@ -41,6 +42,14 @@ def limpar_canal(valor):
         "web": "Web",
     }
     return canais.get(texto, "não identificado")
+
+
+def converter_data(valor):
+    """Converte a data de venda; se nao conseguir, devolve None."""
+    try:
+        return datetime.strptime(str(valor).strip(), "%Y-%m-%d %H:%M:%S")
+    except (ValueError, TypeError):
+        return None
 
 
 def ler_arquivo():
@@ -105,6 +114,48 @@ def validar_numeros(df):
     return df
 
 
+def processar_datas(df):
+    """Converte as datas e cria as colunas de ano, mes, dia, hora e ano-mes."""
+    df["data_convertida"] = df["data_venda"].apply(converter_data)
+    df["data_ok"] = df["data_convertida"].notna()
+
+    df["data_br"] = df["data_convertida"].dt.strftime("%d/%m/%Y").fillna("")
+    df["ano"] = df["data_convertida"].dt.strftime("%Y").fillna("")
+    df["mes"] = df["data_convertida"].dt.strftime("%m").fillna("")
+    df["dia"] = df["data_convertida"].dt.strftime("%d").fillna("")
+    df["hora"] = df["data_convertida"].dt.strftime("%H").fillna("")
+    df["ano_mes"] = df["data_convertida"].dt.strftime("%Y-%m").fillna("")
+
+    print("\n--- DATAS ---")
+    print("Datas validas:", df["data_ok"].sum())
+    print("Datas invalidas:", (~df["data_ok"]).sum())
+    print(df.loc[df["data_ok"],
+                 ["data_venda", "data_br", "ano", "mes", "dia", "hora"]].head(3))
+    return df
+
+
+def analisar_entrega(df):
+    """Testa se todo pedido sem data de entrega esta cancelado."""
+    df["sem_entrega"] = df["data_entrega"].isna()
+    df["cancelado"] = df["status_pedido"].str.strip() == "Cancelado"
+
+    sem_entrega = df["sem_entrega"]
+    cancelado = df["cancelado"]
+
+    print("\n--- ENTREGA SEM DATA ---")
+    print("Pedidos sem data de entrega:", sem_entrega.sum())
+    print("Cancelados:", (sem_entrega & cancelado).sum())
+    print("Outros status:", (sem_entrega & ~cancelado).sum())
+
+    if (sem_entrega & ~cancelado).sum() == 0:
+        print("A hipotese e verdadeira.")
+    else:
+        print("A hipotese e falsa: tem pedido sem entrega que nao esta cancelado.")
+        print(df.loc[sem_entrega & ~cancelado,
+                     ["pedido_id", "data_venda", "status_pedido"]].head(3))
+    return df
+
+
 def main():
     """Executa o projeto do inicio ao fim."""
     print("=" * 55)
@@ -119,6 +170,8 @@ def main():
     df = limpar_categorias(df)
     df = limpar_canais(df)
     df = validar_numeros(df)
+    df = processar_datas(df)
+    df = analisar_entrega(df)
 
 
 if __name__ == "__main__":
