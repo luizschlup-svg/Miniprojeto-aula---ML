@@ -6,6 +6,7 @@ Para rodar:
     python main.py
 """
 
+import re
 import sys
 
 import pandas as pd
@@ -14,6 +15,32 @@ import pandas as pd
 sys.stdout.reconfigure(encoding="utf-8")
 
 arquivo = "data/halloween_vendas.csv"
+
+
+def limpar_categoria(valor):
+    """Limpa uma categoria e devolve o texto padronizado."""
+    if pd.isna(valor):
+        return "sem categoria"
+
+    texto = str(valor).strip().lower()
+    texto = re.sub(r"[^a-z\s]", "", texto)
+    texto = re.sub(r"\s+", " ", texto).strip()
+
+    if texto == "":
+        return "sem categoria"
+
+    return texto.capitalize()
+
+
+def limpar_canal(valor):
+    """Troca o nome do canal pelo nome oficial."""
+    texto = str(valor).strip().lower()
+    canais = {
+        "mercado": "Mercado",
+        "loja física": "Loja física",
+        "web": "Web",
+    }
+    return canais.get(texto, "não identificado")
 
 
 def ler_arquivo():
@@ -33,6 +60,30 @@ def mostrar_leitura(df):
     print(df.head(3))
 
 
+def limpar_categorias(df):
+    """Padroniza as categorias e conta as vazias e as alteradas."""
+    df["categoria_limpa"] = df["categoria"].apply(limpar_categoria)
+
+    vazias = df["categoria"].isna() | (df["categoria"].astype(str).str.strip() == "")
+    alteradas = (~vazias) & (df["categoria_limpa"] != df["categoria"])
+
+    print("\n--- CATEGORIAS ---")
+    print("Categorias vazias preenchidas:", vazias.sum())
+    print("Categorias nao vazias alterdas:", alteradas.sum())
+    print(df["categoria_limpa"].value_counts())
+    return df
+
+
+def limpar_canais(df):
+    """Padroniza o canal de venda."""
+    df["canal_limpo"] = df["canal_venda"].apply(limpar_canal)
+
+    print("\n--- CANAIS ---")
+    print(df["canal_limpo"].value_counts())
+    print("Nao identificados:", (df["canal_limpo"] == "não identificado").sum())
+    return df
+
+
 def main():
     """Executa o projeto do inicio ao fim."""
     print("=" * 55)
@@ -44,6 +95,8 @@ def main():
         return
 
     mostrar_leitura(df)
+    df = limpar_categorias(df)
+    df = limpar_canais(df)
 
 
 if __name__ == "__main__":
