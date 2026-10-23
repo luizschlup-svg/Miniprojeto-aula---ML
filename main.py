@@ -84,6 +84,27 @@ def limpar_canais(df):
     return df
 
 
+def validar_numeros(df):
+    """Marca quantidade e preco invalidos, sem corrigir os valores."""
+    df["quantidade_num"] = pd.to_numeric(df["quantidade"], errors="coerce")
+    df["preco_num"] = pd.to_numeric(df["preco_unitario"], errors="coerce")
+
+    qtd_ok = (df["quantidade_num"] > 0) & (df["quantidade_num"] % 1 == 0)
+    preco_ok = df["preco_num"] >= 0
+
+    df["problema_qtd"] = ~qtd_ok
+    df["problema_preco"] = ~preco_ok
+    df["problema_num"] = df["problema_qtd"] | df["problema_preco"]
+
+    print("\n--- QUANTIDADE E PRECO ---")
+    print("Pedidos com quantidade invalida:", df["problema_qtd"].sum())
+    print("Pedidos com preso invalido:", df["problema_preco"].sum())
+    print("Pedidos com os dois problemas:",
+          (df["problema_qtd"] & df["problema_preco"]).sum())
+    print("Total com problema numerico:", df["problema_num"].sum())
+    return df
+
+
 def main():
     """Executa o projeto do inicio ao fim."""
     print("=" * 55)
@@ -97,6 +118,7 @@ def main():
     mostrar_leitura(df)
     df = limpar_categorias(df)
     df = limpar_canais(df)
+    df = validar_numeros(df)
 
 
 if __name__ == "__main__":
