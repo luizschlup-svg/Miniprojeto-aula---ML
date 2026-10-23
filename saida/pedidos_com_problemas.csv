@@ -1,0 +1,24 @@
+pedido_id,data_venda,categoria,canal_venda,quantidade,preco_unitario,status_pedido,data_entrega
+1500,2025-11-04 16:44:22,Acessorio,Loja física,3,,Concluído,2025-11-06 16:44:22
+740,data_invalida,Fantasia,Web,2,85.0,Concluído,
+630,2024-11-03 12:14:23,Acessorio,Mercado,-1,22.0,Concluído,
+625,2024-08-25 22:22:42,Fantasia,Web,2,,Concluído,2024-08-27 22:22:42
+1000,2025-09-18 19:48:22,Fantasia,Web,1,,Concluído,2025-09-20 19:48:22
+1250,2025-10-07 19:21:37,Fantasia,Web,1,,Concluído,2025-10-09 19:21:37
+370,data_invalida,Fantasia,Web,1,125.0,Concluído,
+500,2024-10-09 18:26:36,Fantasia,Loja física,1,,Concluído,2024-10-11 18:26:36
+375,2024-08-28 18:59:14,Fantasia,Web,3,,Concluído,2024-08-30 18:59:14
+250,2024-10-17 09:43:43,Acessorio,Mercado,4,,Concluído,2024-10-19 09:43:43
+125,2024-10-31 13:59:44,Acessorio,Loja física,1,,Concluído,2024-11-02 13:59:44
+840,2025-11-05 16:16:55,Acessorio,Mercado,-1,23.32,Concluído,2025-11-07 16:16:55
+1480,data_invalida,Fantasia,Web,2,132.5,Concluído,
+420,2024-10-30 18:48:52,Acessorio,Mercado,-1,35.0,Concluído,2024-11-01 18:48:52
+1110,data_invalida,Fantasia,Web,1,116.6,Concluído,
+875,2025-11-03 19:41:04,Acessorio,Mercado,6,,Cancelado,
+750,2024-10-28 09:26:11,Fantasia,Loja física,2,,Concluído,2024-10-30 09:26:11
+210,2024-11-06 11:44:46,Fantasia,Loja física,-1,125.0,Concluído,2024-11-08 11:44:46
+1050,2025-10-23 20:33:54,Fantasia,Web,-1,90.1,Concluído,2025-10-25 20:33:54
+1375,2025-09-18 15:15:55,Fantasia,Loja física,2,,Concluído,2025-09-20 15:15:55
+1125,2025-10-23 12:38:12,Fantasia,Loja física,1,,Concluído,
+1260,2025-10-06 11:49:25,Acessorio,Loja física,-1,23.32,Concluído,
+1470,2025-10-12 19:01:44,Fantasia,Web,-1,132.5,Concluído,2025-10-14 19:01:44
