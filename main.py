@@ -6,6 +6,7 @@ Para rodar:
     python main.py
 """
 
+import os
 import re
 import sys
 from datetime import datetime
@@ -156,6 +157,46 @@ def analisar_entrega(df):
     return df
 
 
+def contar_pedidos(df):
+    """Conta pedidos por canal e por ano-mes."""
+    por_canal = df.loc[
+        df["canal_limpo"] != "não identificado", "canal_limpo"
+    ].value_counts()
+
+    por_ano_mes = df.loc[
+        df["data_ok"], "ano_mes"
+    ].value_counts().sort_index()
+
+    print("\n--- PEDIDOS POR CANAL ---")
+    print(por_canal)
+    print("Excluidos (canal nao identificado):",
+          (df["canal_limpo"] == "não identificado").sum())
+
+    print("\n--- PEDIDOS POR ANO-MES ---")
+    print(por_ano_mes)
+    print("Excluidos (data invalida):", (~df["data_ok"]).sum())
+
+    return por_canal, por_ano_mes
+
+
+def salvar_arquivos(df, por_canal, por_ano_mes):
+    """Salva os pedidos com problema e as duas contagens."""
+    os.makedirs("saida", exist_ok=True)
+
+    problemas = df.loc[
+        df["problema_num"] | ~df["data_ok"],
+        ["pedido_id", "data_venda", "categoria", "canal_venda",
+         "quantidade", "preco_unitario", "status_pedido", "data_entrega"],
+    ]
+    problemas.to_csv("saida/pedidos_com_problemas.csv", index=False)
+    por_canal.to_csv("saida/pedidos_por_canal.csv",
+                     header=["pedidos"], index_label="canal")
+    por_ano_mes.to_csv("saida/pedidos_por_ano_mes.csv",
+                       header=["pedidos"], index_label="ano_mes")
+
+    print("\nArquivos salvos na pasta saida/.")
+
+
 def main():
     """Executa o projeto do inicio ao fim."""
     print("=" * 55)
@@ -172,6 +213,8 @@ def main():
     df = validar_numeros(df)
     df = processar_datas(df)
     df = analisar_entrega(df)
+    por_canal, por_ano_mes = contar_pedidos(df)
+    salvar_arquivos(df, por_canal, por_ano_mes)
 
 
 if __name__ == "__main__":
